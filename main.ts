@@ -186,6 +186,9 @@ export default class NoteSharingPlugin extends Plugin {
 		const { setFrontmatterKeys } = useFrontmatterHelper(this.app);
 
 		const body = await this.app.vault.read(file);
+		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
+		console.log(embeds);
+
 		const title = this.settings.shareFilenameAsTitle
 			? file.basename
 			: undefined;
