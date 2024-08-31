@@ -189,6 +189,8 @@ export default class NoteSharingPlugin extends Plugin {
 		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
 		console.log('found embeds', embeds);
 
+		const embededFiles = [];
+
 		for (const embed of embeds) {
 			const fileEmbeded = this.app.metadataCache.getFirstLinkpathDest(
 				embed.link,
@@ -207,8 +209,7 @@ export default class NoteSharingPlugin extends Plugin {
 					""
 				)
 			);
-			body = body.replace(embed.original, `<img src="data:image/png;base64,${base64}" />`);
-			console.log('replaced', embed.original, `<img src="data:image/png;base64" />`);
+			embededFiles.push({ original: embed.original, base64: base64 });
 		}
 
 		const title = this.settings.shareFilenameAsTitle
@@ -216,7 +217,7 @@ export default class NoteSharingPlugin extends Plugin {
 			: undefined;
 
 		this.noteSharingService
-			.shareNote(body, { title })
+			.shareNote(body, embededFiles, { title })
 			.then((res) => {
 				if (this.settings.useFrontmatter) {
 					const datetime = moment().format(

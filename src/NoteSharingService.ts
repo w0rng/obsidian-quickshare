@@ -36,6 +36,7 @@ export class NoteSharingService {
 	 */
 	public async shareNote(
 		body: string,
+		embededFiles: { original: string; base64: string }[],
 		options?: ShareNoteOptions
 	): Promise<Response> {
 		body = this.sanitizeNote(body);
@@ -48,7 +49,7 @@ export class NoteSharingService {
 		const stringPayload = JSON.stringify(jsonPayload);
 
 		const { ciphertext, iv, key } = await encryptString(stringPayload);
-		const res = await this.postNote(ciphertext, iv);
+		const res = await this.postNote(ciphertext, iv, embededFiles);
 		res.view_url += `#${key}`;
 		console.log(`Note shared: ${res.view_url}`);
 		return res;
@@ -69,7 +70,7 @@ export class NoteSharingService {
 		});
 	}
 
-	private async postNote(ciphertext: string, iv: string): Promise<Response> {
+	private async postNote(ciphertext: string, iv: string, embededFiles: { original: string; base64: string }[]): Promise<Response> {
 		const res = await requestUrl({
 			url: `${this._url}/api/note`,
 			method: "POST",
@@ -80,6 +81,7 @@ export class NoteSharingService {
 				user_id: this._userId,
 				plugin_version: this._pluginVersion,
 				crypto_version: "v3",
+				embeded: embededFiles,
 			}),
 		});
 
