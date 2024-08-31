@@ -209,6 +209,7 @@ export default class NoteSharingPlugin extends Plugin {
 			);
 			console.log('base64', base64);
 			body.replace(embed.original, `<img src="data:image/png;base64,${base64}" />`);
+			console.log('replaced', embed.original, `<img src="data:image/png;base64" />`);
 		}
 
 		const title = this.settings.shareFilenameAsTitle
