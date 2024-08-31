@@ -187,13 +187,16 @@ export default class NoteSharingPlugin extends Plugin {
 
 		const body = await this.app.vault.read(file);
 		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
+		console.log('found embeds', embeds);
 
 		for (const embed of embeds) {
 			const fileEmbeded = this.app.metadataCache.getFirstLinkpathDest(
 				embed.link,
 				file.path
 			);
+			console.log('found embeded file', fileEmbeded);
 			if (fileEmbeded.extension.match(/(png|jpe?g|svg|bmp|gif|)$/i)[0]?.length <= 0) {
+				console.log('not image, skip');
 				continue;
 			}
 			const data = await this.app.vault.adapter.readBinary(fileEmbeded.path);
@@ -204,6 +207,7 @@ export default class NoteSharingPlugin extends Plugin {
 					""
 				)
 			);
+			console.log('base64', base64);
 			body.replace(embed.link, `<img src="data:image/png;base64,${base64}" />`);
 		}
 
