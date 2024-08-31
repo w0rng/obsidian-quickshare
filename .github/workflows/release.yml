@@ -2,8 +2,8 @@ name: Release Obsidian plugin
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "*"
 
 env:
   PLUGIN_NAME: obsidian-quickshare # Change this to match the id of your plugin.
