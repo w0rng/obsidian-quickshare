@@ -185,7 +185,7 @@ export default class NoteSharingPlugin extends Plugin {
 	async shareNote(file: TFile) {
 		const { setFrontmatterKeys } = useFrontmatterHelper(this.app);
 
-		const body = await this.app.vault.read(file);
+		let body = await this.app.vault.read(file);
 		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
 		console.log('found embeds', embeds);
 
@@ -207,8 +207,7 @@ export default class NoteSharingPlugin extends Plugin {
 					""
 				)
 			);
-			console.log('base64', base64);
-			body.replace(embed.original, `<img src="data:image/png;base64,${base64}" />`);
+			body = body.replace(embed.original, `<img src="data:image/png;base64,${base64}" />`);
 			console.log('replaced', embed.original, `<img src="data:image/png;base64" />`);
 		}
 
