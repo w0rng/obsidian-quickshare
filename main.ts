@@ -187,7 +187,25 @@ export default class NoteSharingPlugin extends Plugin {
 
 		const body = await this.app.vault.read(file);
 		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
-		console.log(embeds);
+
+		for (const embed of embeds) {
+			const fileEmbeded = this.app.metadataCache.getFirstLinkpathDest(
+				embed.link,
+				file.path
+			);
+			if (fileEmbeded.extension.match(/(png|jpe?g|svg|bmp|gif|)$/i)[0]?.length <= 0) {
+				continue;
+			}
+			const data = await this.app.vault.adapter.readBinary(fileEmbeded.path);
+			// image to base64 html and replace the link
+			const base64 = btoa(
+				new Uint8Array(data).reduce(
+					(data, byte) => data + String.fromCharCode(byte),
+					""
+				)
+			);
+			body.replace(embed.link, `<img src="data:image/png;base64,${base64}" />`);
+		}
 
 		const title = this.settings.shareFilenameAsTitle
 			? file.basename
