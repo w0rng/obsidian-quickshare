@@ -57,7 +57,8 @@ export class NoteSharingService {
 		for (const embed of embededFiles) {
 			const data = embed.data;
 			const base64 = await encryptArrayBuffer(data, key);
-			embeded.push({ original: embed.original, base64 });
+			const original = await encryptString(embed.original, key);
+			embeded.push({ original, base64 });
 		}
 
 		const res = await this.postNote(ciphertext, secret.iv, embeded);
