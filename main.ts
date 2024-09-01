@@ -185,11 +185,11 @@ export default class NoteSharingPlugin extends Plugin {
 	async shareNote(file: TFile) {
 		const { setFrontmatterKeys } = useFrontmatterHelper(this.app);
 
-		let body = await this.app.vault.read(file);
+		const body = await this.app.vault.read(file);
 		const embeds = this.app.metadataCache.getFileCache(file)?.embeds || [];
 		console.log('found embeds', embeds);
 
-		const embededFiles = [];
+		const embededFiles: {original: string, data: ArrayBuffer}[] = [];
 
 		for (const embed of embeds) {
 			const fileEmbeded = this.app.metadataCache.getFirstLinkpathDest(
@@ -202,14 +202,7 @@ export default class NoteSharingPlugin extends Plugin {
 				continue;
 			}
 			const data = await this.app.vault.adapter.readBinary(fileEmbeded.path);
-			// image to base64 html and replace the link
-			const base64 = btoa(
-				new Uint8Array(data).reduce(
-					(data, byte) => data + String.fromCharCode(byte),
-					""
-				)
-			);
-			embededFiles.push({ original: embed.original, base64: base64 });
+			embededFiles.push({ original: embed.original, data: data });
 		}
 
 		const title = this.settings.shareFilenameAsTitle

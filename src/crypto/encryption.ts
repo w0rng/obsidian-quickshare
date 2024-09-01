@@ -16,6 +16,7 @@ export async function encryptString(
 	plaintext: string
 ): Promise<EncryptedString> {
 	const key = await generateRandomKey();
-	const { ciphertext, iv } = await _encryptString(plaintext, key);
-	return { ciphertext, iv, key: masterKeyToString(key).slice(0, 43) };
+	const ciphertext = await _encryptString(plaintext, key);
+	const secret = masterKeyToString(key);
+	return { ciphertext, iv: secret.iv, key: secret.key };
 }

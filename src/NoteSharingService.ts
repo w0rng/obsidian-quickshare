@@ -1,6 +1,6 @@
 import moment, { type Moment } from "moment";
 import { requestUrl } from "obsidian";
-import { encryptString } from "./crypto/encryption";
+import {generateRandomKey, masterKeyToString, encryptString, encryptArrayBuffer} from "./crypto/crypto";
 
 type ShareNoteOptions = {
 	title?: string;
@@ -36,7 +36,7 @@ export class NoteSharingService {
 	 */
 	public async shareNote(
 		body: string,
-		embededFiles: { original: string; base64: string }[],
+		embededFiles: {original: string, data: ArrayBuffer}[],
 		options?: ShareNoteOptions
 	): Promise<Response> {
 		body = this.sanitizeNote(body);
@@ -48,9 +48,20 @@ export class NoteSharingService {
 
 		const stringPayload = JSON.stringify(jsonPayload);
 
-		const { ciphertext, iv, key } = await encryptString(stringPayload);
-		const res = await this.postNote(ciphertext, iv, embededFiles);
-		res.view_url += `#${key}`;
+		const key = await generateRandomKey();
+		const secret = masterKeyToString(key);
+
+		const ciphertext = await encryptString(stringPayload, key);
+
+		const embeded: { original: string; base64: string }[] = [];
+		for (const embed of embededFiles) {
+			const data = embed.data;
+			const base64 = await encryptArrayBuffer(data, key);
+			embeded.push({ original: embed.original, base64 });
+		}
+
+		const res = await this.postNote(ciphertext, secret.iv, embeded);
+		res.view_url += `#${secret.key}`;
 		console.log(`Note shared: ${res.view_url}`);
 		return res;
 	}
