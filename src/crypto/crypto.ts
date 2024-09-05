@@ -25,7 +25,7 @@ async function _generateKey(seed: ArrayBuffer): Promise<ArrayBuffer> {
             hash: "SHA-256",
         },
         keyMaterial,
-        32
+        128
     );
 
     return new Uint8Array(masterKey);
