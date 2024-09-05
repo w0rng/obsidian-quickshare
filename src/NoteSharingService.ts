@@ -62,7 +62,7 @@ export class NoteSharingService {
 
         const ciphertext = await encryptString(stringPayload, key);
 
-        const res = await this.postNote(ciphertext, secret.iv);
+        const res = await this.postNote(ciphertext, secret.iv, options?.title);
         res.view_url += `#${secret.key}`;
         console.log(`Note shared: ${res.view_url}`);
         return res;
@@ -83,7 +83,7 @@ export class NoteSharingService {
         });
     }
 
-    private async postNote(ciphertext: string, iv: string): Promise<Response> {
+    private async postNote(ciphertext: string, iv: string, title?: string): Promise<Response> {
         const res = await requestUrl({
             url: `${this._url}/api/note`,
             method: "POST",
@@ -94,6 +94,7 @@ export class NoteSharingService {
                 user_id: this._userId,
                 plugin_version: this._pluginVersion,
                 crypto_version: "v3",
+                title: title || null,
             }),
         });
 

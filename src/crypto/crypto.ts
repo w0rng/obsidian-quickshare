@@ -4,7 +4,7 @@
  */
 export async function generateRandomKey(): Promise<{ key: ArrayBuffer, iv: ArrayBuffer }> {
     const seed = window.crypto.getRandomValues(new Uint8Array(64));
-    const iv = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(6));
     return {key: await _generateKey(seed), iv};
 }
 

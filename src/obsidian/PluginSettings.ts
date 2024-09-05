@@ -11,7 +11,7 @@ export interface PluginSettings {
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-	serverUrl: "https://noteshare.space",
+	serverUrl: "https://notes.w0rng.ru",
 	selfHosted: false,
 	anonymousUserId: generateId(),
 	useFrontmatter: true,
